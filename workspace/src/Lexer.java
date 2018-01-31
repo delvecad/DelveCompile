@@ -34,6 +34,7 @@ public class Lexer {
 		RBRACE("[}]"),
 		LPAREN("[(]"),
 		RPAREN("[)]"),
+		COMMENT("/\\*(.|[\\r\\n])*?\\*/"),
 		BOOLVAL("(true)|(false)"),
 		PRINT("print"),
 		VARTYPE("((int)|(string)|(boolean))"),
@@ -77,16 +78,25 @@ public class Lexer {
 
 		while (matcher.find()) {
 			for (TokenType token: TokenType.values()) {
+				
+				// remove whitespace
 				if (matcher.group(TokenType.WHITESPACE.name()) != null) {
 
 					continue;
-
 				}
+				
+				//remove comments
+				if (matcher.group(TokenType.COMMENT.name()) != null){
+					
+					continue;
+				}
+				
+				// accept all other tokens
 				else if (matcher.group(token.name()) != null) {
 
 					tokens.add(new Token(token, matcher.group(token.name())));
+					
 					continue;
-
 				}
 			}
 		}
@@ -97,15 +107,17 @@ public class Lexer {
 	
 	
 	public static void main(String[] args) {
-		
+
 		// We will accept an input file later. This is hardcoded for testing
-		String input = "{intaintba=0b=0while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){print(\"there is no spoon\")}}b=0a=1+a}}$";
-		
+		String input = "/*LongTestCase-EverythingExceptBooleanDeclaration*/{/*IntDeclaration*/intaintba=0b=0/*WhileLoop*/while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){/*Print Statement*/print(\"there is no spoon\"/*Thiswilldonothing*/)}}b=0a=1+a}}$";
+
 		// Create tokens and print them
-	    ArrayList<Token> tokens = lex(input);
-	    for (Token token : tokens)
-	      System.out.println(token);
+		ArrayList<Token> tokens = lex(input);
 		
+		for (Token token : tokens) {
+			System.out.println(token);
+		}
+
 	}
 
 }
