@@ -16,12 +16,9 @@ public class Lexer {
 	public static enum TokenType {
 
 		/*
-		 * Boy is this neato. You can add to this list
-		 * as you need, so you don't need to deal with
-		 * conditions or giant, nested, if-else blocks.
-		 * Fun fun fun.
+		 * The below indicates our grammar.
 		 * 
-		 * NOTE: the below are ranked in order of precedence
+		 * NOTE: They are ranked in order of precedence
 		 * ascending. The longest matches take precedence over
 		 * shorter matches. For example, int would be processed
 		 * as "int" -> VARTYPE rather than: 
@@ -33,8 +30,10 @@ public class Lexer {
 		DIGIT("[0-9]"),
 		ADDITION("[+]"),
 		QUOTE("[\"]"),
-		LPAREN("[{]"),
-		RPAREN("[}]"),
+		LBRACE("[{]"),
+		RBRACE("[}]"),
+		LPAREN("[(]"),
+		RPAREN("[)]"),
 		BOOLVAL("(true)|(false)"),
 		PRINT("print"),
 		VARTYPE("((int)|(string)|(boolean))"),
