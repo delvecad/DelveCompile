@@ -1,3 +1,7 @@
+// Working title: DelVe
+// Antonio DelVecchio 2018
+// CMPT 432 - Compilers
+
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -35,6 +39,8 @@ public class Lexer {
 		PRINT("print"),
 		VARTYPE("((int)|(string)|(boolean))"),
 		WHILE("while"),
+		ELSE("else"),
+		IF("if"),
 		ID("[A-Za-z]"),
 		BOOLOP("(==)|(!=)"),
 		ASSIGN("[=]"),

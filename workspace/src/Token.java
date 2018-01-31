@@ -15,6 +15,6 @@ public class Token {
      */
     @Override
     public String toString() {
-      return String.format("\"%s\" -> [%s]", data, type.name());
+      return String.format("LEXER --> | \"%s\" [%s]", type.name(), data);
     }
 }
