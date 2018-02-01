@@ -3,6 +3,7 @@
 // CMPT 432 - Compilers
 
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -57,6 +58,7 @@ public class Lexer {
 		
 	}
 	
+		
 	
 	
 	// This function will lex the programs and return an arraylist of tokens
@@ -108,12 +110,19 @@ public class Lexer {
 	
 	public static void main(String[] args) {
 
-		// We will accept an input file later. This is hardcoded for testing
-		String input = "/*LongTestCase-EverythingExceptBooleanDeclaration*/{/*IntDeclaration*/intaintba=0b=0/*WhileLoop*/while(a!=3){print(a)while(b!=3){print(b)b=1+bif(b==2){/*Print Statement*/print(\"there is no spoon\"/*Thiswilldonothing*/)}}b=0a=1+a}}$";
+		// Get input file from command line
+		Scanner scanner = new Scanner(System.in);
+		String fileInput = "";
+		
+		while (scanner.hasNext()) {
+			fileInput = fileInput + scanner.nextLine();
+		}
+		scanner.close();
 
 		// Create tokens and print them
-		ArrayList<Token> tokens = lex(input);
+		ArrayList<Token> tokens = lex(fileInput);
 		
+		System.out.println("\n" + "Lexing...");
 		for (Token token : tokens) {
 			System.out.println(token);
 		}

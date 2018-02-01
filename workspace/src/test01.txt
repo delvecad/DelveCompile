@@ -1,0 +1,21 @@
+/* This test case demonstrates boolean
+ - printing and different scope repetitive
+ - variable names.
+ - Result: inta true 5 */
+{
+    int a 
+    boolean b 
+    {
+        string c
+        a = 5 
+        b = true 
+        c = "inta"
+        print(c)
+    }
+    string c
+    c = " "
+    print(c)
+    print(b) 
+    print(" ")
+    print(a)
+}$
