@@ -20,7 +20,7 @@ public class Lexer {
 		 * The below indicates our grammar.
 		 * 
 		 * NOTE: They are ranked in order of precedence
-		 * ascending. The longest matches take precedence over
+		 * descending. The longest matches take precedence over
 		 * shorter matches. For example, int would be processed
 		 * as "int" -> VARTYPE rather than: 
 		 * "i" -> [ID]
@@ -31,8 +31,8 @@ public class Lexer {
 		NEWLINE("[\r\n|\r|\n]"),
 		DIGIT("[0-9]"),
 		ADDITION("[+]"),
-//		CHAR("(?<=\")(?:\\\\.|[^\"\\\\])*(?=\")"),
-		QUOTE("[\"]"),
+		STRING("\"([^\"]*)\""),
+		QUOTE("\""),
 		LBRACE("[{]"),
 		RBRACE("[}]"),
 		LPAREN("[(]"),
@@ -45,6 +45,7 @@ public class Lexer {
 		ELSE("else"),
 		IF("if"),
 		ID("[A-Za-z]"),
+		CHAR("a-z"),
 		BOOLOP("(==)|(!=)"),
 		ASSIGN("[=]"),
 		WHITESPACE("\\s+"),
@@ -65,7 +66,6 @@ public class Lexer {
 	// This function will lex the programs and return an arraylist of tokens
 	public static ArrayList<Token> lex(String input) {
 		boolean EOPTokenFound = false;
-		int lineNum = 1;
 		
 		
 		ArrayList<Token> tokens = new ArrayList<Token>();
@@ -75,12 +75,24 @@ public class Lexer {
 		for (TokenType tokenType : TokenType.values()) {
 			buffer.append(String.format("|(?<%s>%s)", tokenType.name(), tokenType.pattern));
 		}
+		
+		System.out.println("~~~~~~~~~~~~~~~BUFFER~~~~~~~~~~~");
+		System.out.println(buffer);
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 		Pattern tokenPatterns = Pattern.compile(new String(buffer.substring(1)));
-
 		
-		Matcher matcher = tokenPatterns.matcher(input);
+		System.out.println("~~~~~~~~~~~~~~~TOKEN~PATTERNS~~~~~~~~~~~");
+		System.out.println(tokenPatterns);
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
+		Matcher matcher = tokenPatterns.matcher(input);
+		
+		System.out.println("~~~~~~~~~~~~~~~MATCHER~~~~~~~~~~~");
+		System.out.println(matcher);
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		
+		
 		while (matcher.find()) {
 			
             for (TokenType token: TokenType.values()) {
@@ -105,15 +117,40 @@ public class Lexer {
 				
 				// accept all other valid tokens
 				else if (matcher.group(token.name()) != null) {
-
-					tokens.add(new Token(token, matcher.group(token.name()), getLine(input, matcher.start())));
+					
+					int lineNum = getLine(input, matcher.start());
+					
+					tokens.add(new Token(token, matcher.group(token.name()), lineNum));
 					
 					continue;
 				}
 			}
 		}
-		return tokens;
+		
+		// get quote tokens and break them into character lists
+		ArrayList<Token> charTokens = new ArrayList<Token>();
+		
+		for (Token token : tokens) {
+			if (token.type == TokenType.STRING) {
+				char[] charArray = token.data.toCharArray();
+				
+				//first index is a quote mark
+				charTokens.add(tokens.indexOf(token), new Token(TokenType.QUOTE, Character.toString(charArray[0]), token.lineNum));
+				
+				for(int i = 1; i < charArray.length - 1 ; i++) {
+					charTokens.add(tokens.indexOf(token) + i, new Token(TokenType.CHAR, Character.toString(charArray[i]), token.lineNum));
+				}
+				
+				//last index is a quote mark (if quote gets recognized anywhere else, it's an error)
+				charTokens.add(tokens.indexOf(token) + charArray.length - 1, new Token(TokenType.QUOTE, Character.toString(charArray[charArray.length - 1]), token.lineNum));
+			}
+			else
+				charTokens.add(token);
+		}
+		
+		return charTokens;
 	}
+	
 	
 	
 	// Gets the line number of each token

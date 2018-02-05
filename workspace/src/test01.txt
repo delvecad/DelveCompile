@@ -6,10 +6,10 @@
     int a 
     boolean b 
     {
-        string c
+        string c 
         a = 5 
         b = true 
-        c = "inta"
+        c = "int a"
         print(c)
     }
     string c
