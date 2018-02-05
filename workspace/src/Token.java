@@ -2,10 +2,12 @@
 public class Token {
 	public Lexer.TokenType type;
     public String data;
+    public int lineNum;
 
-    public Token(Lexer.TokenType type, String data) {
+    public Token(Lexer.TokenType type, String data, int lineNum) {
       this.type = type;
       this.data = data;
+      this.lineNum = lineNum;
     }
 
     
@@ -15,6 +17,6 @@ public class Token {
      */
     @Override
     public String toString() {
-      return String.format("LEXER --> | %s [%s]", type.name(), data);
+      return String.format("LEXER --> | %s [%s] on line " + lineNum, type.name(), data);
     }
 }

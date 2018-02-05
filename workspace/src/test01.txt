@@ -2,7 +2,7 @@
  - printing and different scope repetitive
  - variable names.
  - Result: inta true 5 */
-{
+{ 
     int a 
     boolean b 
     {
