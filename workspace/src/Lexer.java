@@ -7,19 +7,19 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/*
+ * This is the lexer for the compiler. The lexer takes an input from a text file and generate
+ * an array list of tokens that will be passed down the chain in the following phases of compiling.
+ */
+
 public class Lexer {
 	
-	/* Tokens are enumerated here so as to 
-	 * define them with their explicit name,
-	 * rather than with int identifiers
-	 * or something like that
-	 */
 	public static enum TokenType {
 
 		/*
 		 * The below indicates our grammar.
 		 * 
-		 * NOTE: They are ranked in order of precedence
+		 * NOTE: These regular expressions are placed in order of precedence
 		 * descending. The longest matches take precedence over
 		 * shorter matches. For example, int would be processed
 		 * as "int" -> VARTYPE rather than: 
@@ -28,7 +28,6 @@ public class Lexer {
 		 * "t" -> [ID]
 		 */
 		
-		NEWLINE("[\r\n|\r|\n]"),
 		DIGIT("[0-9]"),
 		ADDITION("[+]"),
 		STRING("\"([^\"]*)\""),
@@ -52,7 +51,6 @@ public class Lexer {
 		EOP("[$]");
 		
 		
-		
 		public final String pattern;
 		
 		private TokenType(String pattern) {
@@ -61,12 +59,18 @@ public class Lexer {
 		
 	}
 	
+	
+	
+	
 		
 	
-	// This function will lex the programs and return an arraylist of tokens
+	/*
+	 * Takes a string as input, ensures that each token is formatted correctly,
+	 * and then returns an array list of accepted tokens.
+	 * @param input This should be the string gotten from your text file.
+	 * @return ArrayList<Token> This returns an array list of tokens.
+	 */
 	public static ArrayList<Token> lex(String input) {
-		boolean EOPTokenFound = false;
-		
 		
 		ArrayList<Token> tokens = new ArrayList<Token>();
 
@@ -81,8 +85,6 @@ public class Lexer {
 		Matcher matcher = tokenPatterns.matcher(input);
 		
 
-		
-		
 		while (matcher.find()) {
 			
             for (TokenType token: TokenType.values()) {
@@ -99,12 +101,6 @@ public class Lexer {
 					continue;
 				}
 				
-				// ignore newline character in lexer output
-				if (matcher.group(TokenType.NEWLINE.name()) != null){
-					
-					continue;
-				}
-				
 				// accept all other valid tokens
 				else if (matcher.group(token.name()) != null) {
 					
@@ -117,15 +113,31 @@ public class Lexer {
 			}
 		}
 		
-		return filterList(tokens);
+		ArrayList<Token> filteredTokens = filterList(tokens);
+		
+		System.out.println("\n" + "Lexing...");
+		for (Token token : filteredTokens) {
+			System.out.println(token);
+		}
+		
+		System.out.println("----------\n");
+		checkForEOP(filteredTokens);
+		
+		return filteredTokens;
 	}
+	
+	
+	
+	
 	
 	
 	/*
 	 * This function takes the array list of tokens created by the lexer
-	 * and filters the strings so that they are found and converted to
-	 * charLists between quotes. This function acts as a final pass at the 
-	 * array list before it is ready for output.
+	 * and filters the strings so that they are converted to charLists 
+	 * between quotes, as per our grammar. This function acts as a final pass 
+	 * at the array list before it is ready for output.
+	 * @param tokens Accepts an array list of tokens
+	 * @return ArrayList<Token> returns a newly formatted array list
 	 */
 	static ArrayList<Token> filterList (ArrayList<Token> tokens) {
 
@@ -155,16 +167,22 @@ public class Lexer {
 	
 	
 	
+	
+	
 	/*
 	 * This function finds the line breaks in the source program
 	 * and calculates line numbers. It is used in particular for 
 	 * assigning line numbers to corresponding tokens.
+	 * @param data Accepts the string input from your text file.
+	 * @param start Accepts a start index.
+	 * @return Returns the line number of the content before the 
+	 * 		   line break.
 	 */
 	static int getLine(String data, int start) {
 	    
 		int line = 1;
 	    
-	    Pattern pattern = Pattern.compile("\n");
+	    Pattern pattern = Pattern.compile("[\r\n|\r|\n]");
 	    Matcher matcher = pattern.matcher(data);
 	    
 	    matcher.region(0, start);
@@ -179,9 +197,53 @@ public class Lexer {
 	
 	
 	
+	
+	/*
+	 * This function checks to see if the input file contains an end of program token.
+	 * It only checks and returns a boolean. It does nothing with the information.
+	 */
+	static ArrayList<Token> checkForEOP(ArrayList<Token> arrayList) {
+		boolean foundEOP = false;
+		
+		for (Token token : arrayList) {
+			if (token.type == TokenType.EOP) {
+				foundEOP = true;
+			}
+		}
+		if (foundEOP == false) {
+			arrayList.add(new Token(TokenType.EOP, "$", arrayList.get(arrayList.size() - 1).lineNum));
+			System.out.println("Warning: No EOP token found. EOP token inserted at end of program.");
+		}
+		return arrayList;
+		
+	}
+	
+	
+	
+	
+	
+	/*
+	 * This function runs through the array list and checks for errors and warnings.
+	 * It returns an Alert object, which contains the number of warnings and errors
+	 * reported.
+	 */
+	static Alert statusReport(ArrayList<Token> arrayList) {
+		int warnings = 0;
+		int errors = 0;
+		
+		// Check for EOP
+		
+		// Check for unexpected characters
+		
+		return new Alert(warnings, errors);
+	}
+	
+	
+	
+	
+	
+	
 	public static void main(String[] args) {
-//		boolean EOPTokenFound = false;
-//		int programCounter = 1;
 		
 		// Get input file from command line
 		Scanner scanner = new Scanner(System.in);
@@ -193,14 +255,10 @@ public class Lexer {
 		scanner.close();
 
 		// Create tokens and print them
-		ArrayList<Token> tokens = lex(fileInput.toString());
+		lex(fileInput.toString());
 		
-		System.out.println("\n" + "Lexing...");
-		for (Token token : tokens) {
-			System.out.println(token);
-		}
 		
-		System.out.println("----------");
+		System.out.println("File Input:");
 		System.out.println(fileInput);
 
 	}
