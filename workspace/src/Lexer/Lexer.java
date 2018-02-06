@@ -1,3 +1,5 @@
+package Lexer;
+
 // Working title: DelVe
 // Antonio DelVecchio 2018
 // CMPT 432 - Compilers
@@ -146,6 +148,18 @@ public class Lexer {
 	}
 	
 	
+	public static String getFileInput() {
+		
+		Scanner scanner = new Scanner(System.in);
+		String fileInput = "";
+
+		while (scanner.hasNextLine()) {
+			fileInput = fileInput + "\n" + scanner.nextLine();
+		}
+		scanner.close();
+		
+		return fileInput;
+	}
 	
 	
 	
@@ -236,26 +250,4 @@ public class Lexer {
 		return arrayList;
 		
 	}
-	
-	
-	
-	
-	
-	
-	public static void main(String[] args) {
-		
-		// Get input file from command line
-		Scanner scanner = new Scanner(System.in);
-		String fileInput = "";
-		
-		while (scanner.hasNextLine()) {
-			fileInput = fileInput + "\n" + scanner.nextLine();
-		}
-		scanner.close();
-
-		// Create tokens and print them
-		lex(fileInput.toString());
-
-	}
-
 }

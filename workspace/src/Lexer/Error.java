@@ -1,3 +1,4 @@
+package Lexer;
 
 public class Error {
 	
