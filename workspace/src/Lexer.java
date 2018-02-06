@@ -13,7 +13,6 @@ import java.util.regex.Matcher;
  */
 
 public class Lexer {
-	
 	public static enum TokenType {
 
 		/*
@@ -48,7 +47,8 @@ public class Lexer {
 		BOOLOP("(==)|(!=)"),
 		ASSIGN("[=]"),
 		WHITESPACE("\\s+"),
-		EOP("[$]");
+		EOP("[$]"),
+		UNACCEPTED(".");
 		
 		
 		public final String pattern;
@@ -58,11 +58,9 @@ public class Lexer {
 		}
 		
 	}
-	
-	
-	
-	
 		
+	
+	
 	
 	/*
 	 * Takes a string as input, ensures that each token is formatted correctly,
@@ -73,6 +71,7 @@ public class Lexer {
 	public static ArrayList<Token> lex(String input) {
 		
 		ArrayList<Token> tokens = new ArrayList<Token>();
+		ArrayList<Warning> warnings = new ArrayList<Warning>();
 
 		StringBuffer buffer = new StringBuffer();
 
@@ -101,6 +100,14 @@ public class Lexer {
 					continue;
 				}
 				
+				if (matcher.group(TokenType.UNACCEPTED.name()) != null) {
+					int lineNum = getLine(input, matcher.start());
+					
+					warnings.add(new Warning(matcher.group(TokenType.UNACCEPTED.name()), lineNum));
+					
+					break;
+				}
+				
 				// accept all other valid tokens
 				else if (matcher.group(token.name()) != null) {
 					
@@ -114,14 +121,20 @@ public class Lexer {
 		}
 		
 		ArrayList<Token> filteredTokens = filterList(tokens);
+		checkForEOP(filteredTokens);
 		
 		System.out.println("\n" + "Lexing...");
 		for (Token token : filteredTokens) {
 			System.out.println(token);
 		}
 		
-		System.out.println("----------\n");
-		checkForEOP(filteredTokens);
+		if (warnings.isEmpty()) {
+			System.out.println("\nLexing completed with 0 Warnings \n");
+		}
+		for (Warning warning : warnings) {
+			System.out.println(warning);
+		}
+		
 		
 		return filteredTokens;
 	}
@@ -180,7 +193,7 @@ public class Lexer {
 	 */
 	static int getLine(String data, int start) {
 	    
-		int line = 1;
+		int line = 0;
 	    
 	    Pattern pattern = Pattern.compile("[\r\n|\r|\n]");
 	    Matcher matcher = pattern.matcher(data);
@@ -212,30 +225,10 @@ public class Lexer {
 		}
 		if (foundEOP == false) {
 			arrayList.add(new Token(TokenType.EOP, "$", arrayList.get(arrayList.size() - 1).lineNum));
-			System.out.println("Warning: No EOP token found. EOP token inserted at end of program.");
+			System.out.println("WARNING: Missing EOP token. Automatically inserted at end of program.");
 		}
 		return arrayList;
 		
-	}
-	
-	
-	
-	
-	
-	/*
-	 * This function runs through the array list and checks for errors and warnings.
-	 * It returns an Alert object, which contains the number of warnings and errors
-	 * reported.
-	 */
-	static Alert statusReport(ArrayList<Token> arrayList) {
-		int warnings = 0;
-		int errors = 0;
-		
-		// Check for EOP
-		
-		// Check for unexpected characters
-		
-		return new Alert(warnings, errors);
 	}
 	
 	
@@ -256,10 +249,6 @@ public class Lexer {
 
 		// Create tokens and print them
 		lex(fileInput.toString());
-		
-		
-		System.out.println("File Input:");
-		System.out.println(fileInput);
 
 	}
 
