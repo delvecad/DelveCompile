@@ -13,10 +13,10 @@ TO RUN JAVA PROGRAMS FROM TERMINAL:
   
 If the code compiles and runs correctly, you will see the correct output displayed in the terminal. If any issues arise during either process, errors will indicate what went wrong. It is worth noting that no flags have to be included in the terminal commands to include errors or warnings as they are enabled by default.
 
-TO RUN LEXER:
-  1. navigate to Lexer.java
-  2. Compile the code by executing 'javac Lexer.java'
-  3. Pipe in a test file to lex by running the command 'java Lexer < testfile.txt', replacing testfile.txt with your test file      of choice.
+TO RUN COMPILER:
+  1. navigate to Compiler.java
+  2. Compile the code by executing 'javac Compiler.java'
+  3. Pipe in a test file to lex by running the command 'java Compiler < testfile.txt', replacing testfile.txt with your test        file of choice.
   
 The lexer should then display all of the tokens it captured from the text file.
 
