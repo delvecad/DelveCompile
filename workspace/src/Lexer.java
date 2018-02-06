@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
  */
 
 public class Lexer {
+	
 	public static enum TokenType {
 
 		/*
@@ -42,7 +43,7 @@ public class Lexer {
 		WHILE("while"),
 		ELSE("else"),
 		IF("if"),
-		ID("[A-Za-z]"),
+		ID("[a-z]"),
 		CHAR("a-z"),
 		BOOLOP("(==)|(!=)"),
 		ASSIGN("[=]"),
@@ -71,7 +72,7 @@ public class Lexer {
 	public static ArrayList<Token> lex(String input) {
 		
 		ArrayList<Token> tokens = new ArrayList<Token>();
-		ArrayList<Warning> warnings = new ArrayList<Warning>();
+		ArrayList<Error> errors = new ArrayList<Error>();
 
 		StringBuffer buffer = new StringBuffer();
 
@@ -103,7 +104,7 @@ public class Lexer {
 				if (matcher.group(TokenType.UNACCEPTED.name()) != null) {
 					int lineNum = getLine(input, matcher.start());
 					
-					warnings.add(new Warning(matcher.group(TokenType.UNACCEPTED.name()), lineNum));
+					errors.add(new Error(matcher.group(TokenType.UNACCEPTED.name()), lineNum));
 					
 					break;
 				}
@@ -123,18 +124,19 @@ public class Lexer {
 		ArrayList<Token> filteredTokens = filterList(tokens);
 		checkForEOP(filteredTokens);
 		
-		System.out.println("\n" + "Lexing...");
-		for (Token token : filteredTokens) {
-			System.out.println(token);
-		}
 		
-		if (warnings.isEmpty()) {
-			System.out.println("\nLexing completed with 0 Warnings \n");
+		if (errors.isEmpty()) {
+			System.out.println("\n" + "Lexing...");
+			for (Token token : filteredTokens) {
+				System.out.println(token);
+			}
+			System.out.println("\nLexing completed. \n");
 		}
 		else {
 			System.out.println();
-			for (Warning warning : warnings) {
-				System.out.println(warning);
+			for (Error error : errors) {
+				System.out.println(error);
+				return null;
 			}
 			System.out.println("\nLexing complete\n");
 		}
