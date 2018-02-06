@@ -11,6 +11,6 @@ public class Warning {
 	
 	@Override
     public String toString() {
-      return String.format("WARNING: Unrecognized token [%s] found on line " + lineNum, data);
+      return String.format("WARNING: Unrecognized token [%s] found on line " + lineNum + ". Token removed.", data);
     }
 }

@@ -131,8 +131,12 @@ public class Lexer {
 		if (warnings.isEmpty()) {
 			System.out.println("\nLexing completed with 0 Warnings \n");
 		}
-		for (Warning warning : warnings) {
-			System.out.println(warning);
+		else {
+			System.out.println();
+			for (Warning warning : warnings) {
+				System.out.println(warning);
+			}
+			System.out.println("\nLexing complete\n");
 		}
 		
 		
