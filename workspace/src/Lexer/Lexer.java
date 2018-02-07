@@ -124,13 +124,18 @@ public class Lexer {
 		}
 		
 		ArrayList<Token> filteredTokens = filterList(tokens);
-		checkForEOP(filteredTokens);
+		boolean EOPFound = checkForEOP(filteredTokens);
 		
 		
 		if (errors.isEmpty()) {
 			System.out.println("\n" + "Lexing...");
 			for (Token token : filteredTokens) {
 				System.out.println(token);
+			}
+			
+			System.out.println("Ello gov");
+			if (EOPFound == false) {
+				System.out.println("WARNING: Missing EOP token. Automatically inserted at end of program.");
 			}
 			System.out.println("\nLexing completed. \n");
 		}
@@ -160,8 +165,6 @@ public class Lexer {
 		
 		return fileInput;
 	}
-	
-	
 	
 	
 	/*
@@ -235,7 +238,7 @@ public class Lexer {
 	 * This function checks to see if the input file contains an end of program token.
 	 * It only checks and returns a boolean. It does nothing with the information.
 	 */
-	static ArrayList<Token> checkForEOP(ArrayList<Token> arrayList) {
+	static boolean checkForEOP(ArrayList<Token> arrayList) {
 		boolean foundEOP = false;
 		
 		for (Token token : arrayList) {
@@ -245,9 +248,8 @@ public class Lexer {
 		}
 		if (foundEOP == false) {
 			arrayList.add(new Token(TokenType.EOP, "$", arrayList.get(arrayList.size() - 1).lineNum));
-			System.out.println("WARNING: Missing EOP token. Automatically inserted at end of program.");
 		}
-		return arrayList;
+		return foundEOP;
 		
 	}
 }

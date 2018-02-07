@@ -5,7 +5,7 @@ public class Compiler {
 
 	public static void main(String[] args) {
 		ArrayList<Token> lexTokens = new ArrayList<Token>();
-		
+
 		// Get input file from command line
 		String fileInput = Lexer.getFileInput();
 

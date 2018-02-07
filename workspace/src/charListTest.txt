@@ -1,0 +1,26 @@
+/* This test displays how the lexer recognizes 
+ * characters between quote marks as single characters. 
+ * "int a" for example is printed as a series of chars 
+ * rather than as an integer type and an identifier. 
+ * Note that whitespace and comments are ignored.
+ */
+
+{ 
+    int a 
+    boolean b
+    {
+        string c 
+        a = 5 
+        b = true 
+        c = "int a"
+        print(c)
+    }
+    string c
+    c = " "
+    print(c)
+    print(b) 
+    print(" ")
+    print(a)
+}
+
+
