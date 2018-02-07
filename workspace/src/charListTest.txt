@@ -4,7 +4,6 @@
  * rather than as an integer type and an identifier. 
  * Note that whitespace and comments are ignored.
  */
-
 { 
     int a 
     boolean b
@@ -12,7 +11,7 @@
         string c 
         a = 5 
         b = true 
-        c = "int a"
+        c = "int \* a"
         print(c)
     }
     string c

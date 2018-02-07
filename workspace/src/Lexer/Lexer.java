@@ -74,7 +74,7 @@ public class Lexer {
 	public static ArrayList<Token> lex(String input) {
 		
 		ArrayList<Token> tokens = new ArrayList<Token>();
-		ArrayList<Error> errors = new ArrayList<Error>();
+		ArrayList<Error> errors = GlobalErrorList.getInstance().getArrayList();
 
 		StringBuffer buffer = new StringBuffer();
 
@@ -133,11 +133,10 @@ public class Lexer {
 				System.out.println(token);
 			}
 			
-			System.out.println("Ello gov");
 			if (EOPFound == false) {
-				System.out.println("WARNING: Missing EOP token. Automatically inserted at end of program.");
+				System.out.println("\nWARNING: Missing EOP token. Automatically inserted at end of program.");
 			}
-			System.out.println("\nLexing completed. \n");
+			System.out.println("\nLexing completed successfully! \n");
 		}
 		else {
 			System.out.println();
@@ -179,6 +178,7 @@ public class Lexer {
 
 		// get quote tokens and break them into character lists
 		ArrayList<Token> charTokens = new ArrayList<Token>();
+		ArrayList<Error> errors = GlobalErrorList.getInstance().getArrayList();
 
 		for (Token token : tokens) {
 			if (token.type == TokenType.STRING) {
@@ -186,8 +186,12 @@ public class Lexer {
 
 				//first index is a quote mark
 				charTokens.add(tokens.indexOf(token), new Token(TokenType.QUOTE, Character.toString(charArray[0]), token.lineNum));
-
+				
 				for(int i = 1; i < charArray.length - 1 ; i++) {
+					// if it's not a proper charlist, kill lex with an error
+					if(! String.valueOf(charArray[i]).matches("[a-zA-Z ]")) {
+						errors.add(new Error(String.valueOf(charArray[i]), token.lineNum));
+					}
 					charTokens.add(tokens.indexOf(token) + i, new Token(TokenType.CHAR, Character.toString(charArray[i]), token.lineNum));
 				}
 
