@@ -1,0 +1,6 @@
+/* This test shows a simple program compiling.
+ *
+ * Result: SUCCESS 
+ */
+
+{}$

@@ -1,0 +1,23 @@
+/* This test displays how the lexer recognizes 
+ * missing EOP tokens and places them at the
+ * end of the program.
+ *
+ * Result: SUCCESS (WARNING: Missing EOP)
+ */
+{ 
+    int a 
+    boolean b
+    {
+        string c 
+        a = 5 
+        b = true 
+        c = "int a"
+        print(c)
+    }
+    string c
+    c = " "
+    print(c)
+    print(b) 
+    print(" ")
+    print(a)
+}

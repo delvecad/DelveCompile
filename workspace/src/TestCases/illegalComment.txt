@@ -1,0 +1,23 @@
+/* This test displays how the lexer recognizes illegal
+ * characters in strings and returns an error if found.
+ * Errors such as this force the lexer to fail.
+ *
+ * Result: FAILURE (ERROR: Unrecognized token)
+ */
+{ 
+    int a 
+    boolean b
+    {
+        string c 
+        a = 5 
+        b = true 
+        c = "int \* ILLEGAL COMMENT *\ a"
+        print(c)
+    }
+    string c
+    c = " "
+    print(c)
+    print(b) 
+    print(" ")
+    print(a)
+}

@@ -1,0 +1,15 @@
+/* This test shows a simple program with lots of brackets
+ * compiling.
+ *
+ * Result: SUCCESS 
+ */
+
+{{{
+{{{{
+{{
+{{{{{{
+{
+}}}
+}}}}}}
+}}}}
+}}}$

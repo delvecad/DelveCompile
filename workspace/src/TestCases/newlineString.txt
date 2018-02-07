@@ -1,0 +1,25 @@
+/* This test shows how new lines are illegal when
+ * contained in strings.
+ *
+ * Result: FAIL
+ */
+{ 
+    int a 
+    boolean b
+    {
+        string c 
+        a = 5 
+        b = true 
+        c = "int 
+	a"
+        print(c)
+    }
+    string c
+    c = " "
+    print(c)
+    print(b) 
+    print(" ")
+    print(a)
+}$
+
+

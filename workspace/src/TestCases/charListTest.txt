@@ -3,6 +3,8 @@
  * "int a" for example is printed as a series of chars 
  * rather than as an integer type and an identifier. 
  * Note that whitespace and comments are ignored.
+ *
+ * Result: SUCCESS
  */
 { 
     int a 
@@ -11,7 +13,7 @@
         string c 
         a = 5 
         b = true 
-        c = "int \* a"
+        c = "int a"
         print(c)
     }
     string c
@@ -20,6 +22,6 @@
     print(b) 
     print(" ")
     print(a)
-}
+}$
 
 
