@@ -16,7 +16,7 @@ If the code compiles and runs correctly, you will see the correct output display
 TO RUN COMPILER:
   1. navigate to Compiler.java
   2. Compile the code by executing 'javac Compiler.java'
-  3. Pipe in a test file to lex by running the command 'java Compiler < testfile.txt', replacing testfile.txt with your test        file of choice.
+  3. Pipe in a test file to lex by running the command 'java Compiler < TestCases/testfile.txt', replacing testfile.txt with        your test file of choice.
   
 The lexer should then display all of the tokens it captured from the text file.
 
