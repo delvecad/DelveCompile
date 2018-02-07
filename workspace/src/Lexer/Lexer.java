@@ -1,8 +1,9 @@
-package Lexer;
+/*
+ * CMPT 432 Compilers
+ * (c) Antonio DelVecchio 2018
+ */
 
-// Working title: DelVe
-// Antonio DelVecchio 2018
-// CMPT 432 - Compilers
+package Lexer;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -68,6 +69,7 @@ public class Lexer {
 	/*
 	 * Takes a string as input, ensures that each token is formatted correctly,
 	 * and then returns an array list of accepted tokens.
+	 * 
 	 * @param input This should be the string gotten from your text file.
 	 * @return ArrayList<Token> This returns an array list of tokens.
 	 */
@@ -93,29 +95,39 @@ public class Lexer {
 				
 				// remove whitespace
 				if (matcher.group(TokenType.WHITESPACE.name()) != null) {
-
+					// DO NOTHING, thus ignoring whitespace
 					continue;
 				}
 				
 				// remove comments
 				if (matcher.group(TokenType.COMMENT.name()) != null){
-					
+					//DO NOTHING, thus ignoring comments
 					continue;
 				}
 				
+				/*
+				 * throw an error if the token matches none of the acceptable regular expressions
+				 * and is caught by the last resort case, UNACCEPTED
+				 */
 				if (matcher.group(TokenType.UNACCEPTED.name()) != null) {
+					
+					// get the line number of the unaccepted character
 					int lineNum = getLine(input, matcher.start());
 					
+					// throw it in the error array
 					errors.add(new Error(matcher.group(TokenType.UNACCEPTED.name()), lineNum));
 					
+					// break out because there is nothing left to do when an error is caught
 					break;
 				}
 				
 				// accept all other valid tokens
 				else if (matcher.group(token.name()) != null) {
 					
+					// get the line number
 					int lineNum = getLine(input, matcher.start());
 					
+					// throw it in the tokens array
 					tokens.add(new Token(token, matcher.group(token.name()), lineNum));
 					
 					continue;
@@ -123,35 +135,62 @@ public class Lexer {
 			}
 		}
 		
+		/* 
+		 * filter the list of accepted tokens so that strings are converted to char lists between quotes
+		 * and any unaccepted characters between the quotes are caught and thrown as errors.
+		 */
 		ArrayList<Token> filteredTokens = filterList(tokens);
+		
+		/*
+		 * check the filtered list to see if an EOP token is present, and place it at the end of the program 
+		 * if it is absent
+		 */
 		boolean EOPFound = checkForEOP(filteredTokens);
 		
-		
+		// if there are no errors...
 		if (errors.isEmpty()) {
 			System.out.println("\n" + "Lexing...");
+			
+			// print out all of the found tokens
 			for (Token token : filteredTokens) {
 				System.out.println(token);
 			}
 			
+			// if there is no EOP token...
 			if (EOPFound == false) {
+				// let the user know that it was inserted for them
 				System.out.println("\nWARNING: Missing EOP token. Automatically inserted at end of program.");
 			}
+			
+			// print the success message
 			System.out.println("\nLexing completed successfully! \n");
 		}
+		
+		// otherwise, there must be errors, so...
 		else {
+			
+			// print out the found errors
 			System.out.println();
 			for (Error error : errors) {
 				System.out.println(error);
-				return null;
 			}
-			System.out.println("\nLexing complete\n");
+			
+			// print the lex failure message
+			System.out.println("\nLexing failed.\n");
+			
+			// return no array, so that no results get passed to further phases
+			return null;
 		}
 		
-		
+		// if there were no errors, pass along that list of tokens
 		return filteredTokens;
 	}
 	
-	
+	/*
+	 * Accepts input from a text file scanned in from the command line
+	 * 
+	 * @return the text input as a string
+	 */
 	public static String getFileInput() {
 		
 		Scanner scanner = new Scanner(System.in);
@@ -171,6 +210,7 @@ public class Lexer {
 	 * and filters the strings so that they are converted to charLists 
 	 * between quotes, as per our grammar. This function acts as a final pass 
 	 * at the array list before it is ready for output.
+	 * 
 	 * @param tokens Accepts an array list of tokens
 	 * @return ArrayList<Token> returns a newly formatted array list
 	 */
@@ -178,8 +218,16 @@ public class Lexer {
 
 		// get quote tokens and break them into character lists
 		ArrayList<Token> charTokens = new ArrayList<Token>();
+		
+		// get the instance of the global error array
 		ArrayList<Error> errors = GlobalErrorList.getInstance().getArrayList();
 
+		/*
+		 * Every token in the list is scanned. If it is a string, then it is first checked to 
+		 * see if it is valid, then it is converted into a char list between quotes. If it is
+		 * an invalid string containing invalid characters, i.e. '\' or '\n' then an error is
+		 * sent to the error array, and lex fails.
+		 */
 		for (Token token : tokens) {
 			if (token.type == TokenType.STRING) {
 				char[] charArray = token.data.toCharArray();
@@ -188,17 +236,22 @@ public class Lexer {
 				charTokens.add(tokens.indexOf(token), new Token(TokenType.QUOTE, Character.toString(charArray[0]), token.lineNum));
 				
 				for(int i = 1; i < charArray.length - 1 ; i++) {
+					
 					// if it's not a proper charlist, kill lex with an error
 					if(! String.valueOf(charArray[i]).matches("[a-zA-Z ]")) {
 						errors.add(new Error(String.valueOf(charArray[i]), token.lineNum));
 					}
+					
+					// otherwise add it to the returned array
 					charTokens.add(tokens.indexOf(token) + i, new Token(TokenType.CHAR, Character.toString(charArray[i]), token.lineNum));
 				}
 
-				//last index is a quote mark (if quote gets recognized anywhere else, it's an error)
+				//last index is a quote mark 
 				charTokens.add(tokens.indexOf(token) + charArray.length - 1, new Token(TokenType.QUOTE, Character.toString(charArray[charArray.length - 1]), token.lineNum));
 			}
 			else
+				
+				// if the token is not a string, add it to the returned array
 				charTokens.add(token);
 		}	
 		
@@ -213,6 +266,7 @@ public class Lexer {
 	 * This function finds the line breaks in the source program
 	 * and calculates line numbers. It is used in particular for 
 	 * assigning line numbers to corresponding tokens.
+	 * 
 	 * @param data Accepts the string input from your text file.
 	 * @param start Accepts a start index.
 	 * @return Returns the line number of the content before the 
@@ -240,7 +294,11 @@ public class Lexer {
 	
 	/*
 	 * This function checks to see if the input file contains an end of program token.
-	 * It only checks and returns a boolean. It does nothing with the information.
+	 * If one is found, it returns true and does nothing else. If one is absent, then
+	 * one is added at the end of the program and the method returns false.
+	 * 
+	 * @param an array list of tokens
+	 * @return whether or not an EOP token is present
 	 */
 	static boolean checkForEOP(ArrayList<Token> arrayList) {
 		boolean foundEOP = false;

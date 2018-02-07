@@ -1,5 +1,9 @@
 package Lexer;
 
+/*
+ * Class to represent lex errors. Contains the token that caused
+ * the error and the line number of that error.
+ */
 public class Error {
 	
 	public String data;

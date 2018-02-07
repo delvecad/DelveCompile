@@ -1,5 +1,16 @@
+/*
+ * CMPT 432 Compilers
+ * (c) Antonio DelVecchio 2018
+ */
+
 package Lexer;
 
+/*
+ * Class to represent the required data contained in a token, i.e. the
+ * type of token that it is (digit, id, etc.), the data (the actual content
+ * of the token), and the line number that the token is found on in the 
+ * source code.
+ */
 
 public class Token {
 	public Lexer.TokenType type;
