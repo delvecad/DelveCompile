@@ -1,3 +1,8 @@
+/*
+ * CMPT 432 Compilers
+ * (c) Antonio DelVecchio 2018
+ */
+
 package Lexer;
 
 /*
