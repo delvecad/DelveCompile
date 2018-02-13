@@ -1,5 +1,11 @@
-# compilers
-Repo for CMPT 432
+# DelveCompile
+This is a public copy of my in-progress compiler project for CMPT 432.
+
+The language grammar that this compiler accepts can be found at:
+http://labouseur.com/courses/compilers/grammar.pdf
+
+PHASES COMPLETE:
+-Lexical Analysis
 
 The source code will be written in Java (Java 8). 
 I will be working in MacOS 10.12.6, and so setup instructions will be geared toward a Mac environment.
@@ -19,4 +25,5 @@ TO RUN COMPILER:
   3. Pipe in a test file to lex by running the command 'java Compiler < TestCases/testfile.txt', replacing testfile.txt with        your test file of choice.
   
 The lexer should then display all of the tokens it captured from the text file.
+The following phases will be completed roughly every few weeks.
 
