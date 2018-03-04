@@ -21,6 +21,10 @@ public class Error {
 	
 	@Override
     public String toString() {
-      return String.format("ERROR: Unrecognized token [%s] found on line " + lineNum + ".", data);
+		if (data == "\"") {
+			return String.format("ERROR: Unterminated string on line " + lineNum + ".");
+		}
+		else
+			return String.format("ERROR: Unrecognized token [%s] found on line " + lineNum + ".", data);
     }
 }

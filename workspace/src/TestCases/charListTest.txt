@@ -17,10 +17,10 @@
         print(c)
     }
     string c
-    c = " "
+    c = "ab"
     print(c)
     print(b) 
-    print(" ")
+    print(
     print(a)
 }$
 

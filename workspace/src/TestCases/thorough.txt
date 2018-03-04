@@ -1,0 +1,36 @@
+/* 
+ * This should test most of the biz we need to test
+ */
+
+{}$
+
+{{}}$
+
+/* print ugly*/
+{print("hello compiler")}$
+
+
+/* while and print */
+{
+     int a 
+     a = 3
+     while (a != 2) {
+          a = 1
+     }
+     print(a)
+}$
+
+
+/* some nesting */
+{
+     int a 
+     a = 2
+     string b
+     if (b != "hi"){
+          while(a != 4) {
+               print(b)
+	       a = 2
+          }
+     }
+}$
+

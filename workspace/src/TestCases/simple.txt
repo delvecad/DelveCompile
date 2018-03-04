@@ -3,4 +3,7 @@
  * Result: SUCCESS 
  */
 
-{}$
+{
+	int a 
+	a = 2
+}$

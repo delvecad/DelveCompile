@@ -1,8 +1,8 @@
-/* This test displays how the lexer recognizes 
- * tokens even when there's no line breaks or
- * whitespace.
- *
- * Result: SUCCESS
+/*
+ * Here's some bad looking input that should still lex and parse
  */
-{intabooleanb{stringca=5b=truec="inta"print(c)}stringcc=""print(c)print(b)print(" ")print(a)}$
 
+
+{}$
+{}$
+{}$

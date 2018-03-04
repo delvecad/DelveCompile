@@ -1,0 +1,33 @@
+/* This test displays how the lexer catches
+ * unterminated strings as errors.
+ *
+ * Result: ERROR
+ */
+{ 
+    int a 
+    boolean b
+    {
+        string c 
+        a = 5 
+        b = true 
+        c = "unterminated string
+        print(c)
+    }
+    string c
+    c = " "
+    print(c)
+    print(b) 
+    print(" ")
+    print(a)
+}$
+
+{ 
+    int a 
+    boolean b
+    {
+        string c 
+        a = 5 
+        b = true 
+        c = "int a"
+        print(c)
+}$

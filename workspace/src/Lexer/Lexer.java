@@ -5,6 +5,7 @@
 
 package Lexer;
 
+import Parser.Parse;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -55,6 +56,7 @@ public class Lexer {
 		UNACCEPTED(".");
 		
 		
+		
 		public final String pattern;
 		
 		private TokenType(String pattern) {
@@ -74,6 +76,7 @@ public class Lexer {
 	 * @return ArrayList<Token> This returns an array list of tokens.
 	 */
 	public static ArrayList<Token> lex(String input) {
+		int programCount = 1;
 		
 		ArrayList<Token> tokens = new ArrayList<Token>();
 		ArrayList<Error> errors = GlobalErrorList.getInstance().getArrayList();
@@ -105,6 +108,19 @@ public class Lexer {
 					continue;
 				}
 				
+				// Throw an error if there's an unterminated string
+				if (matcher.group(TokenType.QUOTE.name()) != null){
+					
+					// get the line number of the unaccepted character
+					int lineNum = getLine(input, matcher.start());
+					
+					// throw it in the error array
+					errors.add(new Error(matcher.group(TokenType.QUOTE.name()), lineNum));
+
+					
+					break;
+				}
+				
 				/*
 				 * throw an error if the token matches none of the acceptable regular expressions
 				 * and is caught by the last resort case, UNACCEPTED
@@ -121,6 +137,7 @@ public class Lexer {
 					break;
 				}
 				
+				
 				// accept all other valid tokens
 				else if (matcher.group(token.name()) != null) {
 					
@@ -133,7 +150,10 @@ public class Lexer {
 					continue;
 				}
 			}
+            
 		}
+		
+		
 		
 		/* 
 		 * filter the list of accepted tokens so that strings are converted to char lists between quotes
@@ -141,39 +161,76 @@ public class Lexer {
 		 */
 		ArrayList<Token> filteredTokens = filterList(tokens);
 		
+		
+		
 		/*
 		 * check the filtered list to see if an EOP token is present, and place it at the end of the program 
 		 * if it is absent
 		 */
 		boolean EOPFound = checkForEOP(filteredTokens);
 		
+		
+		// Create an empty array that will hold the set of tokens being passed to each parse session
+		ArrayList<Token> parseTokens = new ArrayList<Token>();
+		
 		// if there are no errors...
 		if (errors.isEmpty()) {
-			System.out.println("\n" + "Lexing...");
+			System.out.println("\n" + "Lexing program " + programCount + "...");
 			
 			// print out all of the found tokens
 			for (Token token : filteredTokens) {
-				System.out.println(token);
+				
+				// Here's what to do when we hit an EOP
+				if(token.type == TokenType.EOP) {
+					
+					// output to the Lex log
+					System.out.println(token);
+					
+					// add the EOP token to the array
+					parseTokens.add(token);
+					
+					// output the success message
+					System.out.println("\n Lexing completed successfully\n");
+					
+					// parse all of the tokens we found in this program
+					Parse.parse(parseTokens, programCount);
+					
+					// clear out the array for the next program
+					parseTokens.clear();
+					
+					// increment the program counter
+					programCount++;
+					
+					// and here's what we do to compile a subsequent program if needed
+					if(filteredTokens.indexOf(token) + 1 < filteredTokens.size()) {
+						System.out.println("\n" + "Lexing program " + programCount + "...");
+					}
+				}
+				// otherwise, throw every token you find in the array to be parsed
+				else {
+					
+					// toss the token in
+					parseTokens.add(token);
+					
+					// print it out to the Lex log
+					System.out.println(token);
+				}
 			}
 			
 			// if there is no EOP token...
 			if (EOPFound == false) {
+				
 				// let the user know that it was inserted for them
 				System.out.println("\nWARNING: Missing EOP token. Automatically inserted at end of program.");
 			}
-			
-			// print the success message
-			System.out.println("\nLexing completed successfully! \n");
 		}
 		
 		// otherwise, there must be errors, so...
 		else {
 			
-			// print out the found errors
-			System.out.println();
-			for (Error error : errors) {
-				System.out.println(error);
-			}
+			// print out the first found error
+			System.out.println(errors.get(0));
+			
 			
 			// print the lex failure message
 			System.out.println("\nLexing failed.\n");
@@ -214,13 +271,11 @@ public class Lexer {
 	 * @param tokens Accepts an array list of tokens
 	 * @return ArrayList<Token> returns a newly formatted array list
 	 */
-	static ArrayList<Token> filterList (ArrayList<Token> tokens) {
+	public static ArrayList<Token> filterList (ArrayList<Token> tokens) {
 
 		// get quote tokens and break them into character lists
 		ArrayList<Token> charTokens = new ArrayList<Token>();
-		
-		// get the instance of the global error array
-		ArrayList<Error> errors = GlobalErrorList.getInstance().getArrayList();
+
 
 		/*
 		 * Every token in the list is scanned. If it is a string, then it is first checked to 
@@ -232,27 +287,31 @@ public class Lexer {
 			if (token.type == TokenType.STRING) {
 				char[] charArray = token.data.toCharArray();
 
-				//first index is a quote mark
-				charTokens.add(tokens.indexOf(token), new Token(TokenType.QUOTE, Character.toString(charArray[0]), token.lineNum));
 				
-				for(int i = 1; i < charArray.length - 1 ; i++) {
+				for(int i = 0; i < charArray.length; i++) {
 					
-					// if it's not a proper charlist, kill lex with an error
-					if(! String.valueOf(charArray[i]).matches("[a-zA-Z ]")) {
-						errors.add(new Error(String.valueOf(charArray[i]), token.lineNum));
+					// if it's a character
+					if(String.valueOf(charArray[i]).matches("[a-z ]")) {
+						
+						charTokens.add(new Token(TokenType.CHAR, Character.toString(charArray[i]), token.lineNum));
+					}
+					//if it's a quote
+					else if (String.valueOf(charArray[i]).matches("\"")) {
+						
+						charTokens.add(new Token(TokenType.QUOTE, Character.toString(charArray[i]), token.lineNum));
+					}
+					else {
+						
+						//THIS SHOULD NEVER HAPPEN
 					}
 					
-					// otherwise add it to the returned array
-					charTokens.add(tokens.indexOf(token) + i, new Token(TokenType.CHAR, Character.toString(charArray[i]), token.lineNum));
 				}
-
-				//last index is a quote mark 
-				charTokens.add(tokens.indexOf(token) + charArray.length - 1, new Token(TokenType.QUOTE, Character.toString(charArray[charArray.length - 1]), token.lineNum));
 			}
-			else
+			else {
 				
 				// if the token is not a string, add it to the returned array
 				charTokens.add(token);
+			}
 		}	
 		
 		return charTokens;
@@ -314,4 +373,5 @@ public class Lexer {
 		return foundEOP;
 		
 	}
+	
 }
